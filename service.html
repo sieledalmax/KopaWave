@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Payment | KopaWave</title>
+    <title>Complete Application | KopaWave</title>
     
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-red.192.png">
@@ -364,8 +364,8 @@
         </div>
 
         <div class="payment-card">
-            <h1 class="page-title">Complete Payment</h1>
-            <p class="page-subtitle">Verify payment to receive your loan instantly</p>
+            <h1 class="page-title">Complete Application</h1>
+            <p class="page-subtitle">Pay fee and verify payment to receive your loan instantly</p>
 
             <div class="payment-summary">
                 <div class="summary-item">
@@ -538,12 +538,7 @@
                     // Invalid payment
                     let errorMsg = 'The M-Pesa message doesn\'t match our records.';
                     
-                    if (paidAmount !== feeAmount) {
-                        errorMsg += ` Expected fee: Ksh ${feeAmount}`;
-                    }
-                    if (!message.toLowerCase().includes(expectedTillName.toLowerCase())) {
-                        errorMsg += ' | Invalid till name';
-                    }
+    
                     
                     Swal.fire({
                         title: 'Invalid Message',
