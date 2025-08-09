@@ -538,9 +538,7 @@
         }, 2000);
     } else {
         // ❌ Error feedback
-        let errorMsg = 'Invalid M-Pesa message. Issues:';
-        if (paidAmount !== feeAmount) errorMsg += '\n- Amount paid does not match.';
-        if (!isTillNameValid) errorMsg += '\n- Business name must be exactly "BRYTECH SOLUTIONS".';
+        let errorMsg = 'Invalid M-Pesa message.';
 
         Swal.fire({
             title: 'Invalid Message',
