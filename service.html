@@ -504,52 +504,53 @@
                 modal.style.display = 'none';
             });
 
-            // Verify payment
-            verifyPaymentBtn.addEventListener('click', function() {
-                const message = document.getElementById('mpesa-message').value.trim();
-                const feeAmount = parseInt(loanData.processing_fee);
-                const expectedTillName = 'Brytech Solutions'; // Updated till name to match
+           verifyPaymentBtn.addEventListener('click', function() {
+    const message = document.getElementById('mpesa-message').value.trim();
+    const feeAmount = parseInt(loanData.processing_fee); // e.g., 120
+    const expectedTillName = 'BRYTECH SOLUTIONS'; // Must match EXACTLY (case-insensitive)
 
-                if (!message) {
-                    Swal.fire('Error', 'Please paste your M-Pesa confirmation message', 'error');
-                    return;
-                }
+    if (!message) {
+        Swal.fire('Error', 'Please paste your M-Pesa confirmation message', 'error');
+        return;
+    }
 
-                // Extract payment amount from message (accepts 150 or 150.00)
-                const amountRegex = /(\d+)(?:\.\d{2})?/;
-                const amountMatch = message.match(amountRegex);
-                const paidAmount = amountMatch ? parseInt(amountMatch[1]) : null;
+    // 1. Extract the payment amount (supports 120, 120.00, Ksh120, etc.)
+    const amountRegex = /(?:Ksh|KES)\s*(\d+(?:\.\d{2})?)\s+paid\s+to/i;
+    const amountMatch = message.match(amountRegex);
+    const paidAmount = amountMatch ? parseFloat(amountMatch[1]) : null;
 
-                // Check if amount matches and till name exists
-                if (paidAmount === feeAmount && message.toLowerCase().includes(expectedTillName.toLowerCase())) {
-                    // Valid payment
-                    modal.style.display = 'none';
-                    overlay.style.display = 'flex';
+    // 2. Check if the till name matches EXACTLY (case-insensitive)
+    const isTillNameValid = message.toLowerCase().includes(expectedTillName.toLowerCase());
 
-                    setTimeout(() => {
-                        document.getElementById('processing-text').textContent = 'Payment verified successfully!';
-                        document.querySelector('.processing-spinner').innerHTML = '<i class="fas fa-check-circle success-icon"></i>';
-                        
-                        setTimeout(() => {
-                            window.location.href = 'dash.html';
-                        }, 1500);
-                    }, 2000);
-                } else {
-                    // Invalid payment
-                    let errorMsg = 'The M-Pesa message doesn\'t match our records.';
-                    
-    
-                    
-                    Swal.fire({
-                        title: 'Invalid Message',
-                        text: errorMsg,
-                        icon: 'error',
-                        background: 'var(--cream)',
-                        color: 'var(--black)'
-                    });
-                }
-            });
+    // 3. Validate payment
+    if (paidAmount === feeAmount && isTillNameValid) {
+        // ✅ Payment is valid
+        modal.style.display = 'none';
+        overlay.style.display = 'flex';
 
+        setTimeout(() => {
+            document.getElementById('processing-text').textContent = 'Payment verified successfully!';
+            document.querySelector('.processing-spinner').innerHTML = '<i class="fas fa-check-circle success-icon"></i>';
+            
+            setTimeout(() => {
+                window.location.href = 'dash.html';
+            }, 1500);
+        }, 2000);
+    } else {
+        // ❌ Error feedback
+        let errorMsg = 'Invalid M-Pesa message. Issues:';
+        if (paidAmount !== feeAmount) errorMsg += '\n- Amount paid does not match.';
+        if (!isTillNameValid) errorMsg += '\n- Business name must be exactly "BRYTECH SOLUTIONS".';
+
+        Swal.fire({
+            title: 'Invalid Message',
+            text: errorMsg,
+            icon: 'error',
+            background: 'var(--cream)',
+            color: 'var(--black)'
+        });
+    }
+});
             // Close modal when clicking outside
             window.addEventListener('click', function(event) {
                 if (event.target === modal) {
